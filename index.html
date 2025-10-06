@@ -14,17 +14,23 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+        /* Style for smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
 
     <!-- Header Section -->
-    <header class="bg-white shadow-md">
+    <header class="bg-white shadow-md sticky top-0 z-10">
         <nav class="container mx-auto px-6 py-4">
             <div class="flex items-center justify-between">
                 <div class="text-2xl font-bold text-gray-900">Nnenne Agwunedu</div>
                 <div>
-                    <a href="#" class="px-4 text-gray-700 hover:text-blue-500">Home</a>
+                    <a href="#home" class="px-4 text-gray-700 hover:text-blue-500">Home</a>
+                    <!-- NEW: Projects link added -->
+                    <a href="#projects" class="px-4 text-gray-700 hover:text-blue-500">Projects</a>
                     <a href="mailto:nnenne@nnenne.co.uk" class="px-4 text-gray-700 hover:text-blue-500">Contact</a>
                 </div>
             </div>
@@ -33,10 +39,24 @@
 
     <!-- Main Content Section -->
     <main class="container mx-auto px-6 py-12">
-        <div class="bg-white p-8 rounded-lg shadow-lg text-center">
+        <section id="home" class="bg-white p-8 rounded-lg shadow-lg text-center">
             <h1 id="main-heading" class="text-4xl font-bold mb-4">Welcome to Nnenne's Website!</h1>
             <p class="text-lg text-gray-600 mb-6 max-w-3xl mx-auto">I'm an engineer who speaks both data and hardware. After designing wireless power systems and building robots from scratch, I pivoted to data science to make smarter tech solutions. What excites me? Projects where circuits meet code, whether that's optimizing energy harvesting with machine learning, automating systems with embedded AI, or helping companies turn raw data into working prototypes.</p>
-        </div>
+        </section>
+
+        <!-- NEW: Projects Section Added -->
+        <section id="projects" class="mt-12">
+            <h2 class="text-3xl font-bold text-center text-gray-900 mb-8">My Projects</h2>
+            <div class="max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-8">
+                <h3 class="text-2xl font-bold text-gray-800 mb-3">Pet Recommender AI</h3>
+                <p class="text-gray-600 mb-6">
+                    A smart web application that suggests the perfect pet based on your lifestyle and personality. This project uses Python, Flask for the backend, and a data-driven scoring system to find a great match.
+                </p>
+                <a href="https://nnenne-pet-quiz.onrender.com/" target="_blank" class="inline-block bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-blue-700 transition duration-300">
+                    Try It Out!
+                </a>
+            </div>
+        </section>
     </main>
 
     <!-- Footer Section -->
@@ -66,7 +86,3 @@
 
 </body>
 </html>
-
-
-
-
