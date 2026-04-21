@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Where Engineering Meets Data Science - Nnenne Agwunedu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .prose {
+            max-width: 65ch;
+        }
+        .prose h1 {
+            font-size: 2.25rem;
+            line-height: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .prose h2 {
+            font-size: 1.5rem;
+            line-height: 2rem;
+            font-weight: 600;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .prose p {
+            font-size: 1.125rem;
+            line-height: 1.75rem;
+            margin-bottom: 1.5rem;
+            text-align: justify;
+        }
+        .prose ul li {
+            font-size: 1.125rem;
+            line-height: 1.75rem;
+            text-align: justify;
+        }
+        .prose code {
+            background-color: #F3F4F6;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header Section -->
+    <header class="bg-white shadow-sm">
+        <nav class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <a href="index.html" class="text-2xl font-bold text-gray-900">Nnenne Agwunedu</a>
+                <a href="index.html#blog" class="font-semibold text-blue-600 hover:underline">← Back to Blog</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Article Content -->
+    <main class="container mx-auto px-6 py-12">
+        <article class="prose mx-auto">
+            <p class="text-gray-500">2026 | Research &amp; Career</p>
+            <h1>Where Engineering Meets Data Science: My MSc Dissertation Journey</h1>
+
+            <p>
+                People sometimes ask me why an electrical engineer ended up doing a data science master's. The honest answer is that the two were never as separate as they looked. I spent years designing circuits that harvested radio frequency energy from the air, tiny antennas that pull enough power from ambient Wi-Fi and mobile signals to run a sensor without a battery. The question I kept asking myself was: what if you could predict where that energy would be strong enough, before you ever deployed the hardware? That question became my MSc dissertation.
+            </p>
+
+            <h2>The Problem Worth Solving</h2>
+            <p>
+                Wireless sensor networks are everywhere, monitoring air quality, traffic, temperature, and infrastructure across cities. Most of them run on batteries, which means someone has to physically replace them every few months. RF energy harvesting offers an alternative: harvest enough ambient radio signal from 4G masts and your sensor runs indefinitely. The catch is that signal strength varies dramatically by location, time of day, and which mobile operator you happen to be near. A sensor placed fifty metres from a base station might harvest plenty. One placed around the corner might get almost nothing. The difference between those two locations is not obvious from a map.
+            </p>
+            <p>
+                My dissertation asked a simple but technically hard question: can machine learning predict which locations in London will have enough ambient RF signal to power a wireless sensor, without visiting those locations first?
+            </p>
+
+            <h2>The Dataset</h2>
+            <p>
+                The data came from Ofcom, the UK communications regulator, which publishes drive-test measurements collected by vehicles driving around the UK recording signal strength at regular intervals. I filtered two years of 4G LTE measurements, 2024 and 2025, down to Greater London, ending up with 284,706 measurement points across four operators: Three UK, EE, O2, and Vodafone. Each point recorded where the vehicle was, what time it was, and how strong the signal was in dBm, the standard unit for signal power.
+            </p>
+            <p>
+                The target variable was simple: is a location harvestable? Based on my earlier engineering work, a rectenna circuit, the component that converts radio waves into usable electricity, needs a signal of at least -40 dBm to activate. So any location where at least one operator reached that threshold got a label of 1. Everything else got a 0. Only 0.89% of locations qualified. That extreme imbalance shaped every modelling decision that followed.
+            </p>
+
+            <h2>The Engineering Background Actually Helped</h2>
+            <p>
+                This is where having an electronics background turned out to matter more than I expected. The -40 dBm threshold is not arbitrary, it comes from understanding how rectenna circuits behave at low power densities, something I had worked with in my undergraduate and master's engineering projects. When selecting which signal metrics to include as features, I knew that RSRP measures raw signal strength, RSRQ captures signal quality under interference, and SINR tells you how cleanly the signal can be heard above background noise. Those are not just column names in a spreadsheet, they are physical quantities with specific meanings, and knowing the difference helped me make better feature selection decisions than someone treating them as interchangeable numbers.
+            </p>
+
+            <h2>The Models and What They Found</h2>
+            <p>
+                I trained four models: Random Forest, XGBoost, Support Vector Machine, and LSTM. All were evaluated on a time-based split, training on measurements from 2024 and August 2025, testing on September 2025. This mimics real deployment conditions, where you train on historical data and predict on future unseen locations.
+            </p>
+            <p>
+                XGBoost was the best performer, achieving an F1 score of 0.2769 and a Cohen's Kappa of 0.2752, with zero false positives. Every location it predicted as harvestable genuinely was. The model found 344 out of 2,141 harvestable locations in September 2025. Random Forest was more conservative but similarly precise. SVM failed to generalise at all. LSTM, despite being well-suited to sequential data in theory, collapsed on this dataset, the training set contained fewer than 400 harvestable examples, which simply is not enough for a deep learning model to learn meaningful patterns from the minority class.
+            </p>
+            <p>
+                All Python results were independently verified in R, with XGBoost returning identical ROC-AUC and Kappa scores in both languages, confirming the findings were not an artefact of any particular software environment.
+            </p>
+
+            <h2>What I Actually Built</h2>
+            <p>
+                Beyond the models, the project involved building a complete data pipeline: combining two years of government data in Python, running exploratory analysis with normality tests and spatial mapping on a real London basemap, applying Robust scaling to handle the non-normal signal distributions, and packaging everything into a Streamlit dashboard where you can explore signal strength patterns across London by operator, hour, and location.
+            </p>
+            <p>
+                The dashboard was one of the more satisfying parts. Seeing the drive-test routes light up across a London street map, green dots marking strong signal near base stations, red marking the gaps, made something that had lived in spreadsheets suddenly feel real and spatial.
+            </p>
+
+            <h2>What the Research Contributes</h2>
+            <p>
+                The honest summary is this: ambient RF energy harvesting in London is viable, but only in specific locations. The models cannot yet predict those locations with high recall, they miss most of them. But when they do predict a location as harvestable, they are right every time. For a WSN engineer deciding where to invest in harvesting hardware, a tool that never sends you to a bad location, even if it misses some good ones, has real practical value.
+            </p>
+            <p>
+                The temporal gap between training and test data was the core limitation. September 2025 had harvestable locations that the 2024 data did not. That finding is itself useful: it suggests that harvestability patterns shift over time as network infrastructure changes, and that any deployed prediction system would need periodic retraining to stay accurate.
+            </p>
+
+            <h2>What Came Next</h2>
+            <p>
+                The experience confirmed something I had suspected for a while: the most interesting problems sit at the boundary between disciplines. Knowing how a circuit works made me a better data scientist on this project. Knowing how to build a machine learning pipeline made the engineering questions sharper. I came in as an engineer who learned to code. I am leaving as a data scientist who still thinks in circuits, and I think that combination is genuinely rare and genuinely useful.
+            </p>
+        </article>
+    </main>
+
+</body>
+</html>
